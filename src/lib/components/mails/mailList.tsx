@@ -7,9 +7,20 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import { Container, Row, Col, ListGroup, Button, Card, Spinner, Form, Badge, Alert } from 'react-bootstrap';
+import Mail from "./mail";
+import Chart from "react-google-charts";
 
-export default function MailList({  }: any) {
+const formatChartData = (data: any) => {
+    const chartdata = Object.keys(data).map(f => [f, data[f]]);
+    return [
+        ["",""],
+        ...chartdata,
+    ];
+};
+
+export default function MailList({ }: any) {
     const [data, setData] = useState<any>(null)
+    const [chartdata, setChartData] = useState<any>(null)
     const [lastSync, setLastSync] = useState<any>(null)
     const [isLoading, setLoading] = useState(false)
     const [selectedDate, setSelectedDate] = useState(null);
@@ -23,6 +34,7 @@ export default function MailList({  }: any) {
             .then((res) => res.json())
             .then((data) => {
                 setData(data.result);
+                setChartData(formatChartData(data.foldersUsage));
                 setLoading(false);
                 setLastSync(new Date().toLocaleString());
             });
@@ -75,16 +87,20 @@ export default function MailList({  }: any) {
                                 />
                             </Form.Group>
 
+                            <Chart
+                                chartType="PieChart"
+                                data={chartdata}
+                                options={{
+                                    title: "Folders",
+                                }}
+                                width={"100%"}
+                                height={"400px"}
+                            />
+
                             <ListGroup>
                                 {data ? (<>
                                     {data.length ? data.map((email: any) => (
-                                        <ListGroup.Item
-                                            key={email.id}
-                                            action
-                                        >
-                                            <strong>{email.sender}</strong> - {email.subject}
-                                            <p className="mb-0 text-muted">{email.snippet}</p>
-                                        </ListGroup.Item>
+                                        <Mail key={email.id} email={email} />
                                     )) : <Alert>No data, please select another date.</Alert>}
                                 </>) : (<>
                                     Error

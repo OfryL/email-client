@@ -47,6 +47,20 @@ async function fetchMails(grantId: any, forDate: string, pageToken: string | nul
   return data;
 }
 
+function serializeResult(result: any) {
+  const foldersUsage: any = {}
+  for (const r in result) {    
+    for (const folder in result[r].folders) {
+      const key = result[r].folders[folder];
+      foldersUsage[key] = (foldersUsage[key] || 0) + 1; 
+    } 
+  }
+  return {
+    result,
+    foldersUsage,
+  };
+}
+
 export async function GET(request: Request & NextRequest) {
   const cookieStore = cookies()
 
@@ -58,7 +72,7 @@ export async function GET(request: Request & NextRequest) {
 
   try {
     const result = await fetchMails(grantId, forDate)
-    return Response.json({result})
+    return Response.json(serializeResult(result))
   } catch (error) {
     console.error(error);
     return Response.json({ error: 'Internal Server Error', inner: error }, { status: 500 })
