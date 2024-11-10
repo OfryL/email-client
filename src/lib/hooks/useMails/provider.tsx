@@ -55,6 +55,7 @@ const MailsProvider = ({ children }: any) => {
     const setSelectedDate = useCallback((value: any) => {
         if (value.getTime() !== selectedDate.getTime()) {
             setSelectedDateInner(value);
+            setLoading(true);
             fetchMails(value);
         }
     }, [selectedDate, setSelectedDateInner]);
