@@ -1,24 +1,21 @@
-import cookierCutter from '@/lib/cookie-cutter';
+import { getUserEmailCookie, removeGrantIdCookie } from '@/lib/utils/cookies';
+import { clearCache } from '@/lib/utils/local-storage-cache';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Navbar, Nav, Button } from 'react-bootstrap';
 
 function Header({ }: any) {
-  const [userGrantId, setGrantId] = useState(null)
   const [username, setUserName] = useState(null)
 
   useEffect(() => {
-    const grantId = cookierCutter.get('nylas_user_grant_id')
-    if (grantId) {
-      setGrantId(grantId)
-    }
-    const email = cookierCutter.get('nylas_user_email')
+    const email = getUserEmailCookie()
     if (email) {
-        setUserName(email)
+      setUserName(email)
     }
   }, [])
 
   const onLogout = useCallback(() => {
-    cookierCutter.set('nylas_user_grant_id', undefined, { expires: new Date(0) })
+    removeGrantIdCookie();
+    clearCache();
     window.location.reload();
   }, []);
 
