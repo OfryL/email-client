@@ -47,3 +47,19 @@ Callback endpoint for the login flow to end with.
 - Basic cache was used for the labels fetching to reduce load on the api.
 - This project was a nice *mail app* POC
 - Thanks for reading 😊
+
+## Basic technical flow
+### Login
+- After pushing Login button user is redirecting to `api/v1/login`
+- A link for login is generated then the server is redirecting the user to Google's SSO flow, its includes a callback to `api/v1/oauth`
+- Google redirect the user after successful login to `api/v1/oauth`.
+- The server generates a grant id for this user and returns a cookie with the id for later use.
+
+### Mail list
+- The app uses the cookie to detect a logged user.
+- Using `/api/v1/folders` app is getting the labels for later use. (this data is cached on localStorage)
+- The app showing today's emails, `api/v1/emails` is used.
+- When changing the date the same api is used but with `forDate` param.
+- Users can choose new labels for email from the list we have on cache.
+- a PUT request to `/api/v1/messages/[id]` will save the new change.
+- User can reload the data.
