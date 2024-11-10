@@ -13,7 +13,7 @@ export default function Mail({ email }: any) {
                 <strong>{email.from[0].email}</strong> - {email.subject} {email.folders.map((f: any) => (
                     <Badge style={{ margin: 2 }} key={f}>{f}</Badge>
                 ))}
-                <LabelSelector />
+                <LabelSelector email={email} />
                 <p className="mb-0 text-muted">{email.snippet}</p>
             </ListGroup.Item>
         </>

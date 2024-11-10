@@ -2,7 +2,7 @@
 'use client'
 
 import useMails from '@/lib/hooks/useMails';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Badge, Dropdown, Form, ListGroup } from 'react-bootstrap';
 
 const CustomToggle = React.forwardRef(({ children, onClick }: any, ref: any) => (
@@ -47,12 +47,17 @@ const CustomMenu = React.forwardRef(
     },
   );
 
-export default function LabelSelector({ }: any) {
-    const { state: { folders } } = useMails();
+export default function LabelSelector({ email }: any) {
+    const { state: { folders }, actions: { resync } } = useMails();
+
+    const updateLabels = useCallback(async (email: any, newFolderId: string) => {
+      await updateLabelsApi(email.id, getOldLabels(email.folders, folders), newFolderId);
+      resync();
+    }, []);
 
     const options = useMemo(() => folders?.map(
         (f: any) => (
-            <Dropdown.Item key={f.id} onClick={() => alert(f.id)}>{f.name}</Dropdown.Item>
+            <Dropdown.Item key={f.id} onClick={() => updateLabels(email, f.id)}>{f.name}</Dropdown.Item>
         )),
         [folders],
     );
@@ -70,3 +75,23 @@ export default function LabelSelector({ }: any) {
         </>
     );
 }
+
+async function updateLabelsApi(emailId: string, oldLabels: any, newFolderId: string) {
+  return await fetch(
+    `/api/v1/messages/${emailId}`,
+    {
+      method: "PUT",
+      body: JSON.stringify({
+        folders: [...oldLabels, newFolderId],
+      }),
+    }
+  )
+    .then((res) => {
+      return res.json();
+    })
+    .then((json) => json);
+}
+function getOldLabels(oldFolders: any, folders: any): any {
+  return oldFolders.map((folder: any) => folders.find((f: any) => f.name === folder).id);
+}
+

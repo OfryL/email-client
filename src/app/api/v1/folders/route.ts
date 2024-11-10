@@ -35,4 +35,3 @@ export async function GET(request: Request & NextRequest) {
     return Response.json({ error: 'Internal Server Error', inner: error }, { status: 500 })
   }
 }
-
