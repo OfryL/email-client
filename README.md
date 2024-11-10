@@ -46,6 +46,7 @@ Callback endpoint for the login flow to end with.
 - I used Next.js for a fast MVP but the FE and BE can be separated easily.
 - Basic cache was used for the labels fetching to reduce load on the api.
 - This project was a nice *mail app* POC
+- To-do: Add tests.
 - Thanks for reading 😊
 
 ## Basic technical flow
